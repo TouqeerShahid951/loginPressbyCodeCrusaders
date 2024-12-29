@@ -29,13 +29,18 @@
 	var formbg;
 	var get_theme;
 
+	function updateEyeIconColor(color) {
+		loginpress_find('.dashicons-visibility, .dashicons-hidden').css('color', color);
+	  }
+
 	jQuery(document).ready(function($) {
 
 		// Update gallery default thumbnail on load. @since 3.0.4
 		get_theme = jQuery('.customize-control-checkbox-multiple input[type="radio"]:checked').val();
     	var defaultThumbnails = jQuery('.customize-control-checkbox-multiple input[type="radio"]:checked').next('label').find('img').attr('src');
     	$('.loginpress_gallery_thumbnails:first-child').find('img').attr({'src': defaultThumbnails,'title': defaultThumbnails});
-
+		var initialLabelColor = wp.customize('loginpress_customization[textfield_label_color]').get();
+		updateEyeIconColor(initialLabelColor);
 		/**
 		 * Presets Settings
 		 * @param  {[type]} ) {               checkbox_values [checkbox value]
@@ -118,27 +123,31 @@
 	} // ! loginpress_background_img();
 
 	// function for change LoginPress CSS in real time...
-	function loginpress_css_property( setting, target, property, em = false ) {
-		// Update the login logo width in real time...
-		wp.customize( setting, function( value ) {
-			value.bind( function( loginPressVal ) {
-				if (get_theme == 'minimalist' || change_theme == 'minimalist') {
-					if (target == '#loginform, #login') {
-						target = "#loginform";
-					}
-					
-					if (target == '.login-action-lostpassword #login') {
-						target = "#lostpasswordform";
-					}
-				}
-				if ( loginPressVal == '' ) {
-					loginpress_find( target ).css( property, em );
-				} else {
-					loginpress_find( target ).css( property, loginPressVal );
-				}
-			} );
-		} );
-	} // finish loginpress_css_property();
+	function loginpress_css_property(setting, target, property, em = false) {
+		wp.customize(setting, function(value) {
+		  value.bind(function(loginPressVal) {
+			if (get_theme == 'minimalist' || change_theme == 'minimalist') {
+			  if (target == '#loginform, #login') {
+				target = "#loginform";
+			  }
+			  
+			  if (target == '.login-action-lostpassword #login') {
+				target = "#lostpasswordform";
+			  }
+			}
+			if (loginPressVal == '') {
+			  loginpress_find(target).css(property, em);
+			} else {
+			  loginpress_find(target).css(property, loginPressVal);
+			}
+			
+			// Update eye icon color when label color changes
+			if (setting === 'loginpress_customization[textfield_label_color]') {
+			  updateEyeIconColor(loginPressVal);
+			}
+		  });
+		});
+	  }// finish loginpress_css_property();
 
 	// function for change LoginPress CSS in real time...
 	function loginpress_new_css_property( setting, target, property, suffix ) {
