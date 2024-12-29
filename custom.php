@@ -109,9 +109,20 @@ class LoginPress_Entities {
 
 		$loginpress_customization = get_option( 'loginpress_customization');
 		$loginpress_yt_id         = isset( $loginpress_customization['yt_video_id'] ) && ! empty( $loginpress_customization['yt_video_id'] ) ? $loginpress_customization['yt_video_id'] : false;
+		$loginpress_vimeo_id      = isset( $loginpress_customization['vimeo_video_id'] ) && ! empty( $loginpress_customization['vimeo_video_id'] ) ? $loginpress_customization['vimeo_video_id'] : false;
+        $loginpress_dm_id         = isset( $loginpress_customization['dm_video_id'] ) && ! empty( $loginpress_customization['dm_video_id'] ) ? $loginpress_customization['dm_video_id'] : false;
 
 		if ( $loginpress_yt_id ) {
 			wp_enqueue_script( 'loginpress-yt-iframe', 'https://www.youtube.com/iframe_api' );
+		}
+		// Enqueue Vimeo Player script if a Vimeo video ID is set.
+		if ( $loginpress_vimeo_id ) {
+			wp_enqueue_script( 'loginpress-vimeo-player', 'https://player.vimeo.com/api/player.js' );
+		}
+	
+		// Enqueue DailyMotion Player script if a DailyMotion video ID is set.
+		if ( $loginpress_dm_id ) {
+			wp_enqueue_script( 'loginpress-dm-player', 'https://api.dmcdn.net/all.js' );
 		}
 	}
 
