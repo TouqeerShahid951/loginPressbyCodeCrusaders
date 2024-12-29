@@ -101,30 +101,30 @@ class LoginPress_Entities {
 	}
 
 	/**
-	 * Login Page YouTube Video Background scripts.
+	 * Login Page YouTube, Vimeo ,  DailyMotion Video Background scripts.
 	 *
 	 * @since 3.0.0
 	 */
 	function loginpress_login_page_scripts() {
-
-		$loginpress_customization = get_option( 'loginpress_customization');
-		$loginpress_yt_id         = isset( $loginpress_customization['yt_video_id'] ) && ! empty( $loginpress_customization['yt_video_id'] ) ? $loginpress_customization['yt_video_id'] : false;
-		$loginpress_vimeo_id      = isset( $loginpress_customization['vimeo_video_id'] ) && ! empty( $loginpress_customization['vimeo_video_id'] ) ? $loginpress_customization['vimeo_video_id'] : false;
-        $loginpress_dm_id         = isset( $loginpress_customization['dm_video_id'] ) && ! empty( $loginpress_customization['dm_video_id'] ) ? $loginpress_customization['dm_video_id'] : false;
-
-		if ( $loginpress_yt_id ) {
-			wp_enqueue_script( 'loginpress-yt-iframe', 'https://www.youtube.com/iframe_api' );
-		}
-		// Enqueue Vimeo Player script if a Vimeo video ID is set.
-		if ( $loginpress_vimeo_id ) {
-			wp_enqueue_script( 'loginpress-vimeo-player', 'https://player.vimeo.com/api/player.js' );
-		}
+		$loginpress_customization = get_option('loginpress_customization');
+		
+		// Get video IDs
+		$loginpress_yt_id = isset($loginpress_customization['yt_video_id']) && !empty($loginpress_customization['yt_video_id']) ? $loginpress_customization['yt_video_id'] : false;
+		$loginpress_vimeo_id = isset($loginpress_customization['vimeo_video_id']) && !empty($loginpress_customization['vimeo_video_id']) ? $loginpress_customization['vimeo_video_id'] : false;
+		$loginpress_dailymotion_id = isset($loginpress_customization['dailymotion_video_id']) && !empty($loginpress_customization['dailymotion_video_id']) ? $loginpress_customization['dailymotion_video_id'] : false;
 	
-		// Enqueue DailyMotion Player script if a DailyMotion video ID is set.
-		if ( $loginpress_dm_id ) {
-			wp_enqueue_script( 'loginpress-dm-player', 'https://api.dmcdn.net/all.js' );
+		// Enqueue scripts based on video IDs
+		if ($loginpress_yt_id) {
+			wp_enqueue_script('loginpress-yt-iframe', 'https://www.youtube.com/iframe_api');
+		}
+		if ($loginpress_vimeo_id) {
+			wp_enqueue_script('loginpress-vimeo-iframe', 'https://player.vimeo.com/api/player.js');
+		}
+		if ($loginpress_dailymotion_id) {
+			wp_enqueue_script('loginpress-dailymotion-iframe', 'https://api.dailymotion.com/player.js');
 		}
 	}
+
 
 	/**
 	 * Enqueue jQuery and use wp_localize_script.
@@ -176,7 +176,9 @@ class LoginPress_Entities {
 			'filter_bg'          => apply_filters( 'loginpress_default_bg', '' ),
 			'translated_strings' => array(
 				'wrong_yt_id' => _x( 'Wrong YouTube Video ID', 'Wrong YouTube Video ID (Customizer)', 'loginpress' ),
-			),
+			    'wrong_vimeo_id'    => _x( 'Wrong Vimeo Video ID', 'Wrong Vimeo Video ID (Customizer)', 'loginpress' ),
+                'wrong_dailymotion_id' => _x( 'Wrong Dailymotion Video ID', 'Wrong Dailymotion Video ID (Customizer)', 'loginpress' ),
+            ),
 		);
 
 		wp_localize_script( 'loginpress-customize-control', 'loginpress_script', $loginpress_localize );
@@ -799,7 +801,9 @@ class LoginPress_Entities {
 			'choices'	=> array(
 				'media'	=> __( 'Media', 'loginpress' ),
 				'youtube'	=> __( 'YouTube', 'loginpress' ),
-			),
+			    'vimeo' => __('Vimeo', 'loginpress'),
+                'dailymotion' => __('DailyMotion', 'loginpress'),
+			)
 		) );
 
 		/**
@@ -870,7 +874,45 @@ class LoginPress_Entities {
 				'placeholder'	=> 'GMAwsHomJlE',
 			)
 		) );
+       // Add Vimeo Video ID setting
 
+       $wp_customize->add_setting("loginpress_customization[vimeo_video_id]", array(
+            'type' => 'option',
+            'capability' => 'manage_options',
+            'transport' => 'postMessage',
+            'sanitize_callback' => 'sanitize_text_field'
+        ));
+
+        $wp_customize->add_control("loginpress_customization[vimeo_video_id]", array(
+             'label' => __('Vimeo Video ID:', 'loginpress'),
+             'section' => 'section_background',
+             'priority' => 47,
+             'settings' => "loginpress_customization[vimeo_video_id]",
+             'type' => 'text',
+             'input_attrs' => array(
+                'placeholder' => 'Enter Vimeo Video ID',
+              ),
+			));
+
+      // Add DailyMotion Video ID setting
+       $wp_customize->add_setting("loginpress_customization[dailymotion_video_id]", array(
+            'type' => 'option',
+            'capability' => 'manage_options',
+             'transport' => 'postMessage',
+            'sanitize_callback' => 'sanitize_text_field'
+       ));
+
+        $wp_customize->add_control("loginpress_customization[dailymotion_video_id]", array(
+           'label' => __('DailyMotion Video ID:', 'loginpress'),
+           'section' => 'section_background',
+           'priority' => 48,
+            'settings' => "loginpress_customization[dailymotion_video_id]",
+			'type' => 'text',
+			'input_attrs' => array(
+				'placeholder' => 'x15v3or',
+			),
+		
+		));
 		// @version 1.1.21
 		$wp_customize->add_setting( 'loginpress_customization[background_video_object]', array(
 		'default'			=> 'cover',
